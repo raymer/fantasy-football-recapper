@@ -47,17 +47,6 @@ espnMessage += f". The lowest scoring team was {lowTeam.team_name} who scored {s
 
 print(espnMessage)
 
-#stats
-#print(league.teams)
-#print(league.standings())
-#print(league.top_scorer())
-#print(league.least_scorer())
-#print(league.most_points_against())
-#print(league.top_scored_week())
-#print(league.least_scored_week())
-
-
-
 # Chat GPT
 # messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
 # message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {league.current_week}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"

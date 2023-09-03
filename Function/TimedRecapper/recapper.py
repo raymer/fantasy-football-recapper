@@ -3,7 +3,6 @@ import openai
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 import logging
-import os
 
 def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   swid = _swid

@@ -13,4 +13,3 @@ openAiKey = settings[2].split("=")[1].replace('\n', '').strip()
 slackBotToken = settings[3].split("=")[1].replace('\n', '').strip()
 
 recapper.generateRecap(swid, espn_s2, openAiKey, slackBotToken)
-

@@ -10,7 +10,7 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   openai.api_key = _openAiKey
   slackBotToken = _slackToken
 
-  league = League(league_id=428433, year=2022, espn_s2=espn_s2, swid=swid)
+  league = League(league_id=428433, year=2023, espn_s2=espn_s2, swid=swid)
 
   espnMessage = ''
   topScore = 0
@@ -48,22 +48,22 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   print(espnMessage)
 
   # Chat GPT
-  # messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
-  # message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {league.current_week}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
+  messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
+  message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {league.current_week}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
 
-  # messages.append({"role": "user", "content": message})
-  # chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
-  # chatGPTResponse = chat.choices[0].message.content
-  # logging.info("Chat GPT Response Generated")
+  messages.append({"role": "user", "content": message})
+  chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+  chatGPTResponse = chat.choices[0].message.content
+  logging.info("Chat GPT Response Generated")
   
   # Post to Slack
-  # client = WebClient(token=slackBotToken)
-  # testingChannelId = "C05QADBPZQW"
-  # fantasyFootballChannelId = "G53UF4PC4"
-  # try:
-  #   result = client.chat_postMessage(channel=testingChannelId, text=chatGPTResponse)
-  #   logging.info("Posted to Slack")
+  client = WebClient(token=slackBotToken)
+  testingChannelId = "C05QADBPZQW"
+  fantasyFootballChannelId = "G53UF4PC4"
+  try:
+    result = client.chat_postMessage(channel=fantasyFootballChannelId, text=chatGPTResponse)
+    logging.info("Posted to Slack")
 
-  # except SlackApiError as e:
-  #   logging.info(f"Error: {e}")
+  except SlackApiError as e:
+    logging.info(f"Error: {e}")
 

@@ -12,11 +12,12 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
 
   league = League(league_id=428433, year=2023, espn_s2=espn_s2, swid=swid)
 
+  currentWeek = 1 if league.current_week == 1 else league.current_week - 1
   espnMessage = ''
   topScore = 0
   lowScore = 1000
 
-  box_scores = league.box_scores()
+  box_scores = league.box_scores(currentWeek)
   for box_score in box_scores:
     espnMessage += f" {box_score.away_team.team_name} who scored {str(box_score.away_score)} vs. {box_score.home_team.team_name} who scored {str(box_score.home_score)};"
     if box_score.away_score > topScore:
@@ -28,7 +29,6 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
       lowScore = box_score.away_score
     if box_score.home_score < lowScore:
       lowScore = box_score.home_score
-
 
   topScoringBoxScore = list(filter(lambda x: x.home_score == topScore or x.away_score == topScore, box_scores))
   highTeam = topScoringBoxScore[0].home_team if topScoringBoxScore[0].home_score == topScore else topScoringBoxScore[0].away_team
@@ -49,7 +49,7 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
 
   # Chat GPT
   messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
-  message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {league.current_week}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
+  message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {currentWeek}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
 
   messages.append({"role": "user", "content": message})
   chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)

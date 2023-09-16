@@ -3,6 +3,7 @@ import openai
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 import logging
+from . import weekly_challenge
 
 def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   swid = _swid
@@ -12,7 +13,7 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
 
   league = League(league_id=428433, year=2023, espn_s2=espn_s2, swid=swid)
 
-  currentWeek = 1 if league.current_week == 1 else league.current_week - 1
+  currentWeek = league.current_week if league.current_week == 1 or league.current_week == 14 else league.current_week - 1
   espnMessage = ''
   topScore = 0
   lowScore = 1000
@@ -38,8 +39,8 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   lowTeam = bottomScoringBoxScore[0].home_team if bottomScoringBoxScore[0].home_score == lowScore else bottomScoringBoxScore[0].away_team
   lowRoster = bottomScoringBoxScore[0].home_lineup if bottomScoringBoxScore[0].home_score == lowScore else bottomScoringBoxScore[0].away_lineup
 
-  sortedHighRoster = list(filter(lambda x: x.slot_position != 'BE', sorted(highRoster, key=lambda item: item.points, reverse=True)))
-  sortedLowRoster = list(filter(lambda x: x.slot_position != 'BE', sorted(lowRoster, key=lambda item: item.points)))
+  sortedHighRoster = list(filter(lambda x: x.slot_position != 'BE' and x.slot_position != 'IR', sorted(highRoster, key=lambda item: item.points, reverse=True)))
+  sortedLowRoster = list(filter(lambda x: x.slot_position != 'BE' and x.slot_position != 'IR', sorted(lowRoster, key=lambda item: item.points)))
 
   espnMessage += f" The highest scoring team was {highTeam.team_name} who scored {str(topScore)} points, thanks to {sortedHighRoster[0].name} who scored {str(sortedHighRoster[0].points)}"
   espnMessage += f". The lowest scoring team was {lowTeam.team_name} who scored {str(lowScore)} points, thanks to {sortedLowRoster[0].name} who scored {str(sortedLowRoster[0].points)}"
@@ -56,12 +57,15 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   chatGPTResponse = chat.choices[0].message.content
   logging.info("Chat GPT Response Generated")
   
+  slackMessage = chatGPTResponse + weekly_challenge.getWeeklyWinner(league, currentWeek)
+  print(weekly_challenge.getWeeklyWinner(league, currentWeek))
+
   # Post to Slack
   client = WebClient(token=slackBotToken)
   testingChannelId = "C05QADBPZQW"
   fantasyFootballChannelId = "G53UF4PC4"
   try:
-    result = client.chat_postMessage(channel=fantasyFootballChannelId, text=chatGPTResponse)
+    result = client.chat_postMessage(channel=fantasyFootballChannelId, text=slackMessage)
     logging.info("Posted to Slack")
 
   except SlackApiError as e:

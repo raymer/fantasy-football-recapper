@@ -42,25 +42,35 @@ def calculateTouchdowns(player):
   if "receivingTouchdowns" in breakdown:
     touchDowns += breakdown["receivingTouchdowns"]
 
-  print(player.name, touchDowns)
   return touchDowns
 
+Object = lambda **kwargs: type("Object", (), kwargs)
+
 def getWeek3Winner(league, week):
-
-  touchDownCount = 0
   box_scores = league.box_scores(week)
-  playerDict = {}
+  teamTouchdowns = []
   for box_score in box_scores:
-    for player in box_score.home_lineup:
-      if ("deebo" in player.name.lower()):
-        calculateTouchdowns(player)
-    for player in box_score.away_lineup:
-      if ("deebo" in player.name.lower()):
-        calculateTouchdowns(player)
 
+    numTouchdowns = 0
+    for player in list(filter(lambda x: x.slot_position != 'BE', box_score.home_lineup)):
+      numTouchdowns += calculateTouchdowns(player)
+    
+    teamTouchdowns.append(Object(teamName=box_score.home_team.team_name, touchdowns=numTouchdowns))
+
+    numTouchdowns = 0
+    for player in list(filter(lambda x: x.slot_position != 'BE', box_score.away_lineup)):
+      numTouchdowns += calculateTouchdowns(player)
+    
+    teamTouchdowns.append(Object(teamName=box_score.away_team.team_name, touchdowns=numTouchdowns))
+
+  sortedTouchdowns = sorted(teamTouchdowns, key=lambda item: item.touchdowns, reverse=True)
+
+  for team in sortedTouchdowns:
+    print(team.teamName, team.touchdowns)
 
   # topScoringBoxScore = list(filter(lambda x: x.home_score == topScore or x.away_score == topScore, box_scores))
   # highTeam = topScoringBoxScore[0].home_team if topScoringBoxScore[0].home_score == topScore else topScoringBoxScore[0].away_team
   # highRoster = topScoringBoxScore[0].home_lineup if topScoringBoxScore[0].home_score == topScore else topScoringBoxScore[0].away_lineup
   message = "\n\nWeekly Challenge\nWeek 3: Endzone Celebration - The team that scores the most offensive touchdowns wins.\n"
   return message
+

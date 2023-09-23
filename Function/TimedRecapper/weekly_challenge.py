@@ -25,6 +25,7 @@ def getWeek2Winner(league, week):
   message += f"The winner was {highTeam.team_name} who scored {str(topScore)} points"
   return message
 
+Object = lambda **kwargs: type("Object", (), kwargs)
 
 def calculateTouchdowns(player):
   playerDict = json.loads(str(player.stats).replace("{3:", "{\"3\":").replace("'", "\""))
@@ -32,7 +33,6 @@ def calculateTouchdowns(player):
     return 0
   
   breakdown = playerDict["3"]["breakdown"]
-  # print(breakdown)
 
   touchDowns = 0
   if "passingTouchdowns" in breakdown:
@@ -43,8 +43,6 @@ def calculateTouchdowns(player):
     touchDowns += breakdown["receivingTouchdowns"]
 
   return touchDowns
-
-Object = lambda **kwargs: type("Object", (), kwargs)
 
 def getWeek3Winner(league, week):
   box_scores = league.box_scores(week)
@@ -65,12 +63,15 @@ def getWeek3Winner(league, week):
 
   sortedTouchdowns = sorted(teamTouchdowns, key=lambda item: item.touchdowns, reverse=True)
 
-  for team in sortedTouchdowns:
-    print(team.teamName, team.touchdowns)
-
-  # topScoringBoxScore = list(filter(lambda x: x.home_score == topScore or x.away_score == topScore, box_scores))
-  # highTeam = topScoringBoxScore[0].home_team if topScoringBoxScore[0].home_score == topScore else topScoringBoxScore[0].away_team
-  # highRoster = topScoringBoxScore[0].home_lineup if topScoringBoxScore[0].home_score == topScore else topScoringBoxScore[0].away_lineup
   message = "\n\nWeekly Challenge\nWeek 3: Endzone Celebration - The team that scores the most offensive touchdowns wins.\n"
+  if sortedTouchdowns[0].touchdowns == sortedTouchdowns[1].touchdowns:
+    message += f"Uh oh, there was a tie. Multiple teams scored {str(sortedTouchdowns[0].touchdowns)} touchdowns"
+  else:
+    message += f"The winner was {sortedTouchdowns[0].teamName} who scored {str(sortedTouchdowns[0].touchdowns)} touchdowns"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedTouchdowns:
+    message += f"{team.teamName.strip()} {team.touchdowns}\n"
+  
   return message
 

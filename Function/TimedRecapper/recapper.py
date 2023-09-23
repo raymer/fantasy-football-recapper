@@ -45,9 +45,6 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   espnMessage += f" The highest scoring team was {highTeam.team_name} who scored {str(topScore)} points, thanks to {sortedHighRoster[0].name} who scored {str(sortedHighRoster[0].points)}"
   espnMessage += f". The lowest scoring team was {lowTeam.team_name} who scored {str(lowScore)} points, thanks to {sortedLowRoster[0].name} who scored {str(sortedLowRoster[0].points)}"
 
-  logging.info(espnMessage)
-  print(espnMessage)
-
   # Chat GPT
   messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
   message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {currentWeek}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
@@ -58,7 +55,6 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   logging.info("Chat GPT Response Generated")
   
   slackMessage = chatGPTResponse + weekly_challenge.getWeeklyWinner(league, currentWeek)
-  print(weekly_challenge.getWeeklyWinner(league, currentWeek))
 
   # Post to Slack
   client = WebClient(token=slackBotToken)

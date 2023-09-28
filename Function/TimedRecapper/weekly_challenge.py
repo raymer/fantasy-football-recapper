@@ -1,12 +1,16 @@
 from espn_api.football import League
 import json
 
+Object = lambda **kwargs: type("Object", (), kwargs)
+
 def getWeeklyWinner(league, week):
   box_scores = league.box_scores(week)
   if week == 2:
     return getWeek2Winner(league, week)
   elif week == 3:
     return getWeek3Winner(league, week)
+  elif week == 4:
+    return getWeek4Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -24,8 +28,6 @@ def getWeek2Winner(league, week):
   message = "\n\nWeekly Challenge\nWeek 2: Hot Start - The team that scores the most points wins.\n"
   message += f"The winner was {highTeam.team_name} who scored {str(topScore)} points"
   return message
-
-Object = lambda **kwargs: type("Object", (), kwargs)
 
 def calculateTouchdowns(player):
   playerDict = json.loads(str(player.stats).replace("{3:", "{\"3\":").replace("'", "\""))
@@ -75,3 +77,33 @@ def getWeek3Winner(league, week):
   
   return message
 
+def getWeek4Winner(league, week):
+  box_scores = league.box_scores(week)
+  teamBenchPoints = []
+  for box_score in box_scores:
+
+    numBenchPoints = 0
+    for player in list(filter(lambda x: x.slot_position == 'BE', box_score.home_lineup)):
+      numBenchPoints += player.points
+    
+    teamBenchPoints.append(Object(teamName=box_score.home_team.team_name, benchPoints=numBenchPoints))
+
+    numBenchPoints = 0
+    for player in list(filter(lambda x: x.slot_position == 'BE', box_score.away_lineup)):
+      numBenchPoints += player.points
+    
+    teamBenchPoints.append(Object(teamName=box_score.away_team.team_name, benchPoints=numBenchPoints))
+
+  sortedBenchPoints = sorted(teamBenchPoints, key=lambda item: item.benchPoints, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 4: Bench Warmer - Team with the most total points from their bench.\n"
+  if sortedBenchPoints[0].benchPoints == sortedBenchPoints[1].benchPoints:
+    message += f"Uh oh, there was a tie. Multiple teams scored {str(sortedBenchPoints[0].benchPoints)} bench points"
+  else:
+    message += f"The winner was {sortedBenchPoints[0].teamName} who scored {str(sortedBenchPoints[0].benchPoints)} bench points"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedBenchPoints:
+    message += f"{team.teamName.strip()} {str(round(team.benchPoints, 2))}\n"
+  
+  return message

@@ -11,6 +11,8 @@ def getWeeklyWinner(league, week):
     return getWeek3Winner(league, week)
   elif week == 4:
     return getWeek4Winner(league, week)
+  elif week == 5:
+    return getWeek5Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -105,5 +107,36 @@ def getWeek4Winner(league, week):
   message += f"\n\nHere's the full breakdown:\n"
   for team in sortedBenchPoints:
     message += f"{team.teamName.strip()} {str(round(team.benchPoints, 2))}\n"
+  
+  return message
+
+def getWeek5Winner(league, week):
+  box_scores = league.box_scores(week)
+  teamTouchdowns = []
+  for box_score in box_scores:
+
+    numTouchdowns = 0
+    for player in list(filter(lambda x: x.slot_position != 'BE', box_score.home_lineup)):
+      numTouchdowns += calculateTouchdowns(player)
+    
+    teamTouchdowns.append(Object(teamName=box_score.home_team.team_name, touchdowns=numTouchdowns))
+
+    numTouchdowns = 0
+    for player in list(filter(lambda x: x.slot_position != 'BE', box_score.away_lineup)):
+      numTouchdowns += calculateTouchdowns(player)
+    
+    teamTouchdowns.append(Object(teamName=box_score.away_team.team_name, touchdowns=numTouchdowns))
+
+  sortedTouchdowns = sorted(teamTouchdowns, key=lambda item: item.touchdowns, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 5: Blackjack!- The team with a player who scores the closest to 21 points without going over wins.\n"
+  if sortedTouchdowns[0].touchdowns == sortedTouchdowns[1].touchdowns:
+    message += f"Uh oh, there was a tie. Multiple teams scored {str(sortedTouchdowns[0].touchdowns)} touchdowns"
+  else:
+    message += f"The winner was {sortedTouchdowns[0].teamName} who scored {str(sortedTouchdowns[0].touchdowns)} touchdowns"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedTouchdowns:
+    message += f"{team.teamName.strip()} {team.touchdowns}\n"
   
   return message

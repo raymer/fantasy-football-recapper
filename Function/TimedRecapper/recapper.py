@@ -46,24 +46,25 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   espnMessage += f". The lowest scoring team was {lowTeam.team_name} who scored {str(lowScore)} points, thanks to {sortedLowRoster[0].name} who scored {str(sortedLowRoster[0].points)}"
 
   # Chat GPT
-  messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
-  message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {currentWeek}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
+  # messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
+  # message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {currentWeek}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
 
-  messages.append({"role": "user", "content": message})
-  chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
-  chatGPTResponse = chat.choices[0].message.content
-  logging.info("Chat GPT Response Generated")
+  # messages.append({"role": "user", "content": message})
+  # chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+  # chatGPTResponse = chat.choices[0].message.content
+  # logging.info("Chat GPT Response Generated")
   
-  slackMessage = chatGPTResponse + weekly_challenge.getWeeklyWinner(league, currentWeek)
+  # slackMessage = chatGPTResponse + weekly_challenge.getWeeklyWinner(league, currentWeek)
+  print(weekly_challenge.getWeeklyWinner(league, currentWeek))
 
   # Post to Slack
-  client = WebClient(token=slackBotToken)
-  testingChannelId = "C05QADBPZQW"
-  fantasyFootballChannelId = "G53UF4PC4"
-  try:
-    result = client.chat_postMessage(channel=fantasyFootballChannelId, text=slackMessage)
-    logging.info("Posted to Slack")
+  # client = WebClient(token=slackBotToken)
+  # testingChannelId = "C05QADBPZQW"
+  # fantasyFootballChannelId = "G53UF4PC4"
+  # try:
+  #   result = client.chat_postMessage(channel=fantasyFootballChannelId, text=slackMessage)
+  #   logging.info("Posted to Slack")
 
-  except SlackApiError as e:
-    logging.info(f"Error: {e}")
+  # except SlackApiError as e:
+  #   logging.info(f"Error: {e}")
 

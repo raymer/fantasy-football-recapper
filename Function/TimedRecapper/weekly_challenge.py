@@ -126,7 +126,7 @@ def getWeek5Winner(league, week):
     for player in list(filter(lambda x: x.slot_position != 'BE' and x.slot_position != 'IR', box_score.away_lineup)):
       playerPoints.append(Object(teamName=box_score.away_team.team_name, playerName=player.name, actualPoints=player.points, calculatedPoints=(21 - player.points)))
     
-    sortedPoints = list(filter(lambda x: x.calculatedPoints > 0, sorted(playerPoints, key=lambda item: item.calculatedPoints)))
+    sortedPoints = list(filter(lambda x: x.calculatedPoints >= 0, sorted(playerPoints, key=lambda item: item.calculatedPoints)))
     closestTo21.append(sortedPoints[0])
 
   sortedClosesTo21 = sorted(closestTo21, key=lambda item: item.actualPoints, reverse=True)

@@ -11,6 +11,8 @@ def getWeeklyWinner(league, week):
     return getWeek3Winner(league, week)
   elif week == 4:
     return getWeek4Winner(league, week)
+  elif week == 5:
+    return getWeek5Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -106,4 +108,39 @@ def getWeek4Winner(league, week):
   for team in sortedBenchPoints:
     message += f"{team.teamName.strip()} {str(round(team.benchPoints, 2))}\n"
   
+  return message
+
+def getWeek5Winner(league, week):
+  box_scores = league.box_scores(week)
+  closestTo21 = []
+  for box_score in box_scores:
+
+    playerPoints = []
+    for player in list(filter(lambda x: x.slot_position != 'BE' and x.slot_position != 'IR', box_score.home_lineup)):
+      playerPoints.append(Object(teamName=box_score.home_team.team_name, playerName=player.name, actualPoints=player.points, calculatedPoints=(21 - player.points)))
+    
+    sortedPoints = list(filter(lambda x: x.calculatedPoints > 0, sorted(playerPoints, key=lambda item: item.calculatedPoints)))
+    closestTo21.append(sortedPoints[0])
+
+    playerPoints = []
+    for player in list(filter(lambda x: x.slot_position != 'BE' and x.slot_position != 'IR', box_score.away_lineup)):
+      playerPoints.append(Object(teamName=box_score.away_team.team_name, playerName=player.name, actualPoints=player.points, calculatedPoints=(21 - player.points)))
+    
+    sortedPoints = list(filter(lambda x: x.calculatedPoints > 0, sorted(playerPoints, key=lambda item: item.calculatedPoints)))
+    closestTo21.append(sortedPoints[0])
+
+  sortedClosesTo21 = sorted(closestTo21, key=lambda item: item.actualPoints, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 5: Blackjack!- The team with a player who scores the closest to 21 points without going over wins.\n"
+  if sortedClosesTo21[0].actualPoints == 21:
+    message += f"We had a blackjack!\n"
+  if sortedClosesTo21[0].actualPoints == sortedClosesTo21[1].actualPoints:
+    message += f"Uh oh, there was a tie. Multiple teams had players who scored {str(sortedClosesTo21[0].actualPoints)} points"
+  else:
+    message += f"The winner was {sortedClosesTo21[0].teamName} who had {sortedClosesTo21[0].playerName} score {str(sortedClosesTo21[0].actualPoints)} points"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedClosesTo21:
+    message += f"{team.teamName.strip()} who had {team.playerName} score {team.actualPoints} points\n"
+
   return message

@@ -13,6 +13,8 @@ def getWeeklyWinner(league, week):
     return getWeek4Winner(league, week)
   elif week == 5:
     return getWeek5Winner(league, week)
+  elif week == 6:
+    return getWeek6Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -142,5 +144,28 @@ def getWeek5Winner(league, week):
   message += f"\n\nHere's the full breakdown:\n"
   for team in sortedClosesTo21:
     message += f"{team.teamName.strip()} who had {team.playerName} score {team.actualPoints} points\n"
+
+  return message
+
+def getWeek6Winner(league, week):
+  loserPoints = []
+  box_scores = league.box_scores(week)
+  for box_score in box_scores:
+    if box_score.away_score < box_score.home_score:
+      loserPoints.append(Object(teamName=box_score.away_team.team_name, points=box_score.away_score))
+    elif box_score.home_score < box_score.away_score:
+      loserPoints.append(Object(teamName=box_score.home_team.team_name, points=box_score.home_score))
+
+  sortedLosers = sorted(loserPoints, key=lambda item: item.points, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 6: Biggest Loser- The team that scores the most points in a losing matchup wins.\n"
+  if sortedLosers[0].points == sortedLosers[1].points:
+    message += f"Uh oh, there was a tie. Multiple losing teams scored {str(sortedLosers[0].points)} points"
+  else:
+    message += f"The winner was {sortedLosers[0].teamName} who scored {str(sortedLosers[0].points)} points"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedLosers:
+    message += f"{team.teamName.strip()} who scored {team.points} points\n"
 
   return message

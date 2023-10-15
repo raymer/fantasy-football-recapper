@@ -15,6 +15,8 @@ def getWeeklyWinner(league, week):
     return getWeek5Winner(league, week)
   elif week == 6:
     return getWeek6Winner(league, week)
+  elif week == 7:
+    return getWeek7Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -168,4 +170,27 @@ def getWeek6Winner(league, week):
   for team in sortedLosers:
     message += f"{team.teamName.strip()} who scored {team.points} points\n"
 
+  return message
+
+def getWeek7Winner(league, week):
+  marginsOfVictory = []
+  box_scores = league.box_scores(week)
+  for box_score in box_scores:
+    if box_score.away_score >= box_score.home_score:
+      marginsOfVictory.append(Object(teamName=box_score.away_team.team_name, marginOfVictory=box_score.away_score - box_score.home_score))
+    else:
+      marginsOfVictory.append(Object(teamName=box_score.home_team.team_name, marginOfVictory=box_score.home_score - box_score.away_score))
+
+  sortedMarginsOfVictory = sorted(marginsOfVictory, key=lambda item: item.marginOfVictory, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 7: Like a Boss - The team that wins its matchup by the biggest margin of victory wins.\n"
+  if sortedMarginsOfVictory[0].marginOfVictory == sortedMarginsOfVictory[1].marginOfVictory:
+    message += f"Uh oh, there was a tie. Multiple teams had a margin of victory of {str(round(sortedMarginsOfVictory[0].marginOfVictory, 2))} points"
+  else:
+    message += f"The winner was {sortedMarginsOfVictory[0].teamName} who had a margin of victory of {str(round(sortedMarginsOfVictory[0].marginOfVictory, 2))} points"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedMarginsOfVictory:
+    message += f"{team.teamName.strip()} who had a margin of victory of {str(round(team.marginOfVictory, 2))} points\n"
+  
   return message

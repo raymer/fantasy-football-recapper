@@ -199,21 +199,17 @@ def getWeek7Winner(league, week):
 
 
 def calculateRushYards(player):
-  playerDict = json.loads(str(player.stats).replace("{3:", "{\"3\":").replace("'", "\""))
-  if "breakdown" not in playerDict["3"]:
+  playerDict = json.loads(str(player.stats).replace("{8:", "{\"8\":").replace("'", "\""))
+  if "breakdown" not in playerDict["8"]:
     return 0
   
-  breakdown = playerDict["3"]["breakdown"]
+  breakdown = playerDict["8"]["breakdown"]
 
-  touchDowns = 0
-  if "passingTouchdowns" in breakdown:
-    touchDowns += breakdown["passingTouchdowns"]
-  if "rushingTouchdowns" in breakdown:
-    touchDowns += breakdown["rushingTouchdowns"]
-  if "receivingTouchdowns" in breakdown:
-    touchDowns += breakdown["receivingTouchdowns"]
+  rushYards = 0
+  if "rushingYards" in breakdown:
+    rushYards = breakdown["rushingYards"]
 
-  return touchDowns
+  return rushYards
 
 def getWeek8Winner(league, week):
   box_scores = league.box_scores(week)
@@ -221,24 +217,24 @@ def getWeek8Winner(league, week):
   for box_score in box_scores:
 
     numRushYards = 0
-    for player in list(filter(lambda x: x.slot_position != 'BE', box_score.home_lineup)):
+    for player in list(filter(lambda x: x.slot_position == 'RB', box_score.home_lineup)):
       numRushYards += calculateRushYards(player)
     
     teamRushYards.append(Object(teamName=box_score.home_team.team_name, rushYards=numRushYards))
 
     numRushYards = 0
-    for player in list(filter(lambda x: x.slot_position != 'BE', box_score.away_lineup)):
+    for player in list(filter(lambda x: x.slot_position == 'RB', box_score.away_lineup)):
       numRushYards += calculateRushYards(player)
     
     teamRushYards.append(Object(teamName=box_score.away_team.team_name, rushYards=numRushYards))
 
   sortedRushYards = sorted(teamRushYards, key=lambda item: item.rushYards, reverse=True)
 
-  message = "\n\nWeekly Challenge\nWeek 3: Endzone Celebration - The team that scores the most offensive touchdowns wins.\n"
+  message = "\n\nWeekly Challenge\nWeek 8: Rushing Attack- The team with the most RB rushing yards wins.\n"
   if sortedRushYards[0].rushYards == sortedRushYards[1].rushYards:
-    message += f"Uh oh, there was a tie. Multiple teams scored {str(sortedRushYards[0].rushYards)} touchdowns"
+    message += f"Uh oh, there was a tie. Multiple teams had {str(sortedRushYards[0].rushYards)} rush yards"
   else:
-    message += f"The winner was {sortedRushYards[0].teamName} who scored {str(sortedRushYards[0].rushYards)} touchdowns"
+    message += f"The winner was {sortedRushYards[0].teamName} who had {str(sortedRushYards[0].rushYards)} rush yards"
 
   message += f"\n\nHere's the full breakdown:\n"
   for team in sortedRushYards:

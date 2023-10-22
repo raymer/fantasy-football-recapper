@@ -17,6 +17,8 @@ def getWeeklyWinner(league, week):
     return getWeek6Winner(league, week)
   elif week == 7:
     return getWeek7Winner(league, week)
+  elif week == 8:
+    return getWeek8Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -192,5 +194,50 @@ def getWeek7Winner(league, week):
   message += f"\n\nHere's the full breakdown:\n"
   for team in sortedMarginsOfVictory:
     message += f"{team.teamName.strip()} who had a margin of victory of {str(round(team.marginOfVictory, 2))} points\n"
+  
+  return message
+
+
+def calculateRushYards(player):
+  playerDict = json.loads(str(player.stats).replace("{8:", "{\"8\":").replace("'", "\""))
+  if "breakdown" not in playerDict["8"]:
+    return 0
+  
+  breakdown = playerDict["8"]["breakdown"]
+
+  rushYards = 0
+  if "rushingYards" in breakdown:
+    rushYards = breakdown["rushingYards"]
+
+  return rushYards
+
+def getWeek8Winner(league, week):
+  box_scores = league.box_scores(week)
+  teamRushYards = []
+  for box_score in box_scores:
+
+    numRushYards = 0
+    for player in list(filter(lambda x: x.slot_position == 'RB', box_score.home_lineup)):
+      numRushYards += calculateRushYards(player)
+    
+    teamRushYards.append(Object(teamName=box_score.home_team.team_name, rushYards=numRushYards))
+
+    numRushYards = 0
+    for player in list(filter(lambda x: x.slot_position == 'RB', box_score.away_lineup)):
+      numRushYards += calculateRushYards(player)
+    
+    teamRushYards.append(Object(teamName=box_score.away_team.team_name, rushYards=numRushYards))
+
+  sortedRushYards = sorted(teamRushYards, key=lambda item: item.rushYards, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 8: Rushing Attack- The team with the most RB rushing yards wins.\n"
+  if sortedRushYards[0].rushYards == sortedRushYards[1].rushYards:
+    message += f"Uh oh, there was a tie. Multiple teams had {str(sortedRushYards[0].rushYards)} rush yards"
+  else:
+    message += f"The winner was {sortedRushYards[0].teamName} who had {str(sortedRushYards[0].rushYards)} rush yards"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedRushYards:
+    message += f"{team.teamName.strip()} {team.rushYards}\n"
   
   return message

@@ -247,7 +247,7 @@ def getWeek8Winner(league, week):
 
 def getWeek9Winner(league, week):
   projectedActualDifferential = []
-  box_scores = league.box_scores(7)
+  box_scores = league.box_scores(week)
   for box_score in box_scores:
     projectedActualDifferential.append(Object(teamName=box_score.away_team.team_name, points=abs(box_score.away_score - box_score.away_projected)))
     projectedActualDifferential.append(Object(teamName=box_score.home_team.team_name, points=abs(box_score.home_score - box_score.home_projected)))

@@ -19,6 +19,8 @@ def getWeeklyWinner(league, week):
     return getWeek7Winner(league, week)
   elif week == 8:
     return getWeek8Winner(league, week)
+  elif week == 9:
+    return getWeek9Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -240,4 +242,27 @@ def getWeek8Winner(league, week):
   for team in sortedRushYards:
     message += f"{team.teamName.strip()} {team.rushYards}\n"
   
+  message += "\n\nNext week's challenge is: Nailed It - The team that scores closest to its projected point total (over or under) wins.\n"
+  return message
+
+def getWeek9Winner(league, week):
+  projectedActualDifferential = []
+  box_scores = league.box_scores(week)
+  for box_score in box_scores:
+    projectedActualDifferential.append(Object(teamName=box_score.away_team.team_name, points=abs(box_score.away_score - box_score.away_projected)))
+    projectedActualDifferential.append(Object(teamName=box_score.home_team.team_name, points=abs(box_score.home_score - box_score.home_projected)))
+
+  sortedProjectedActualDifferential = sorted(projectedActualDifferential, key=lambda item: item.points)
+
+  message = "\n\nWeekly Challenge\nWeek 9: Nailed It - The team that scores closest to its projected point total (over or under) wins.\n"
+  if sortedProjectedActualDifferential[0].points == sortedProjectedActualDifferential[1].points:
+    message += f"Uh oh, there was a tie. Multiple teams were {str(round(sortedProjectedActualDifferential[0].points), 1)} points away from their projected score"
+  else:
+    message += f"The winner was {sortedProjectedActualDifferential[0].teamName} who was {str(round(sortedProjectedActualDifferential[0].points, 1))} points away from their projected score"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedProjectedActualDifferential:
+    message += f"{team.teamName.strip()} who was {round(team.points, 1)} points away from their projected score\n"
+
+  message += "\n\nNext week's challenge is: Dead Weight - The team that wins its matchup with the week's lowest-scoring starting player wins.\n"
   return message

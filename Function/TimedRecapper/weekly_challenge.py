@@ -264,4 +264,5 @@ def getWeek9Winner(league, week):
   for team in sortedProjectedActualDifferential:
     message += f"{team.teamName.strip()} who scored {team.points} points\n"
 
+  message += "\n\n Next week's challenge is: Dead Weight - The team that wins its matchup with the week's lowest-scoring starting player wins.\n"
   return message

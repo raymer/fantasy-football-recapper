@@ -21,6 +21,8 @@ def getWeeklyWinner(league, week):
     return getWeek8Winner(league, week)
   elif week == 9:
     return getWeek9Winner(league, week)
+  elif week == 10:
+    return getWeek10Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -265,4 +267,31 @@ def getWeek9Winner(league, week):
     message += f"{team.teamName.strip()} who was {round(team.points, 1)} points away from their projected score\n"
 
   message += "\n\nNext week's challenge is: Dead Weight - The team that wins its matchup with the week's lowest-scoring starting player wins.\n"
+  return message
+
+def getWeek10Winner(league, week):
+  box_scores = league.box_scores(week)
+  lowestScoringPlayers = []
+  for box_score in box_scores:
+
+    if box_score.away_score > box_score.home_score:
+      lowestPoints = list(filter(lambda x: x.slot_position != 'BE' and x.slot_position != 'IR', sorted(box_score.away_lineup, key=lambda item: item.points)))[0]
+      lowestScoringPlayers.append(Object(teamName=box_score.away_team.team_name, points=lowestPoints.points, playerName=lowestPoints.name))
+    elif box_score.home_score > box_score.away_score:
+      lowestPoints = list(filter(lambda x: x.slot_position != 'BE' and x.slot_position != 'IR', sorted(box_score.home_lineup, key=lambda item: item.points)))[0]
+      lowestScoringPlayers.append(Object(teamName=box_score.home_team.team_name, points=lowestPoints.points, playerName=lowestPoints.name))
+
+  sortedlowestScoringPlayers = sorted(lowestScoringPlayers, key=lambda item: item.points)
+
+  message = "\n\nWeekly Challenge\nWeek 10: Dead Weight -The team that wins its matchup with the week's lowest-scoring starting player wins.\n"
+  if sortedlowestScoringPlayers[0].points == sortedlowestScoringPlayers[1].points:
+    message += f"Uh oh, there was a tie. Multiple teams had players who scored {str(sortedlowestScoringPlayers[0].points)} points"
+  else:
+    message += f"The winner was {sortedlowestScoringPlayers[0].teamName} who had {sortedlowestScoringPlayers[0].playerName} score {str(sortedlowestScoringPlayers[0].points)} points"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedlowestScoringPlayers:
+    message += f"{team.teamName.strip()} who had {team.playerName} score {team.points} points\n"
+
+  message += "\n\nNext week's challenge is: Hot Flex -The team with the highest-scoring FLEX position wins.\n"
   return message

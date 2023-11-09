@@ -50,7 +50,7 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   message = f"User : Pretending to be a guy named RickyGPT, write a funny/condescending summary of this week's (week {currentWeek}) results in the fantasy football league given this data about the teams and scores: {espnMessage}"
 
   messages.append({"role": "user", "content": message})
-  chat = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+  chat = openai.ChatCompletion.create(model="gpt-4-1106-preview", messages=messages)
   chatGPTResponse = chat.choices[0].message.content
   logging.info("Chat GPT Response Generated")
   

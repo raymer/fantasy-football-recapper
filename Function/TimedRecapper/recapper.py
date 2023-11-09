@@ -56,7 +56,7 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken):
   
   #slackMessage = chatGPTResponse + weekly_challenge.getWeeklyWinner(league, currentWeek)
 
-  print(weekly_challenge.getWeeklyWinner(league, currentWeek))
+  print(weekly_challenge.getWeeklyWinner(league, 10))
 
   # Post to Slack
   # client = WebClient(token=slackBotToken)

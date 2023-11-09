@@ -283,7 +283,7 @@ def getWeek10Winner(league, week):
 
   sortedlowestScoringPlayers = sorted(lowestScoringPlayers, key=lambda item: item.points)
 
-  message = "\n\nWeekly Challenge\nWeek 10: Dead Weight -The team that wins its matchup with the week’s lowest-scoring starting player wins.\n"
+  message = "\n\nWeekly Challenge\nWeek 10: Dead Weight -The team that wins its matchup with the week's lowest-scoring starting player wins.\n"
   if sortedlowestScoringPlayers[0].points == sortedlowestScoringPlayers[1].points:
     message += f"Uh oh, there was a tie. Multiple teams had players who scored {str(sortedlowestScoringPlayers[0].points)} points"
   else:

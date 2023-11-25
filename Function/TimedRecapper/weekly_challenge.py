@@ -327,11 +327,11 @@ def getWeek11Winner(league, week):
   return message
 
 def calculateReceptions(player):
-  playerDict = json.loads(str(player.stats).replace("{10:", "{\"10\":").replace("'", "\""))
-  if "breakdown" not in playerDict["10"]:
+  playerDict = json.loads(str(player.stats).replace("{12:", "{\"12\":").replace("'", "\""))
+  if "breakdown" not in playerDict["12"]:
     return 0
-  
-  breakdown = playerDict["10"]["receivingReceptions"]
+
+  breakdown = playerDict["12"]["breakdown"]
 
   receivingReceptions = 0
   if "receivingReceptions" in breakdown:
@@ -340,7 +340,7 @@ def calculateReceptions(player):
   return receivingReceptions
 
 def getWeek12Winner(league, week):
-  box_scores = league.box_scores(10)
+  box_scores = league.box_scores(week)
   teamReceptions = []
   for box_score in box_scores:
 
@@ -368,5 +368,5 @@ def getWeek12Winner(league, week):
   for team in sortedReceptions:
     message += f"{team.teamName.strip()} {team.receptions}\n"
   
-  message += "\n\nNext week's challenge is: Defense Wins Championships - The team with the highest-scoring starting defense.\n"
+  message += "\n\nNext week's challenge is: Defense Wins Championships - The team with the highest-scoring starting defense wins.\n"
   return message

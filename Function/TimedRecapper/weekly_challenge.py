@@ -25,6 +25,8 @@ def getWeeklyWinner(league, week):
     return getWeek10Winner(league, week)
   elif week == 11:
     return getWeek11Winner(league, week)
+  elif week == 12:
+    return getWeek12Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -322,4 +324,49 @@ def getWeek11Winner(league, week):
     message += f"{team.teamName.strip()} who had {team.playerName} score {team.points} points\n"
 
   message += "\n\nNext week's challenge is: Gotta Catch Em All - Team with the most WR receptions (WR 1&2, flex not included).\n"
+  return message
+
+def calculateReceptions(player):
+  playerDict = json.loads(str(player.stats).replace("{12:", "{\"12\":").replace("'", "\""))
+  if "breakdown" not in playerDict["12"]:
+    return 0
+
+  breakdown = playerDict["12"]["breakdown"]
+
+  receivingReceptions = 0
+  if "receivingReceptions" in breakdown:
+    receivingReceptions = breakdown["receivingReceptions"]
+
+  return receivingReceptions
+
+def getWeek12Winner(league, week):
+  box_scores = league.box_scores(week)
+  teamReceptions = []
+  for box_score in box_scores:
+
+    numReceptions = 0
+    for player in list(filter(lambda x: x.slot_position == 'WR', box_score.home_lineup)):
+      numReceptions += calculateReceptions(player)
+    
+    teamReceptions.append(Object(teamName=box_score.home_team.team_name, receptions=numReceptions))
+
+    numReceptions = 0
+    for player in list(filter(lambda x: x.slot_position == 'WR', box_score.away_lineup)):
+      numReceptions += calculateReceptions(player)
+    
+    teamReceptions.append(Object(teamName=box_score.away_team.team_name, receptions=numReceptions))
+
+  sortedReceptions = sorted(teamReceptions, key=lambda item: item.receptions, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 12: Gotta Catch Em All - Team with the most WR receptions (WR 1&2, flex not included)\n"
+  if sortedReceptions[0].receptions == sortedReceptions[1].receptions:
+    message += f"Uh oh, there was a tie. Multiple teams had {str(sortedReceptions[0].receptions)} receptions"
+  else:
+    message += f"The winner was {sortedReceptions[0].teamName} who had {str(sortedReceptions[0].receptions)} receptions"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedReceptions:
+    message += f"{team.teamName.strip()} {team.receptions}\n"
+  
+  message += "\n\nNext week's challenge is: Defense Wins Championships - The team with the highest-scoring starting defense wins.\n"
   return message

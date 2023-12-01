@@ -27,6 +27,8 @@ def getWeeklyWinner(league, week):
     return getWeek11Winner(league, week)
   elif week == 12:
     return getWeek12Winner(league, week)
+  elif week == 13:
+    return getWeek13Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -369,4 +371,30 @@ def getWeek12Winner(league, week):
     message += f"{team.teamName.strip()} {team.receptions}\n"
   
   message += "\n\nNext week's challenge is: Defense Wins Championships - The team with the highest-scoring starting defense wins.\n"
+  return message
+
+def getWeek13Winner(league, week):
+  box_scores = league.box_scores(week)
+  highestScoringDefenses = []
+  for box_score in box_scores:
+
+    defense = list(filter(lambda x: x.slot_position == 'D/ST', box_score.away_lineup))[0]
+    highestScoringDefenses.append(Object(teamName=box_score.away_team.team_name, points=defense.points, playerName=defense.name))
+
+    defense = list(filter(lambda x: x.slot_position == 'D/ST', box_score.home_lineup))[0]
+    highestScoringDefenses.append(Object(teamName=box_score.home_team.team_name, points=defense.points, playerName=defense.name))
+
+  sortedHighestScoringDefenses = sorted(highestScoringDefenses, key=lambda item: item.points, reverse=True)
+
+  message = "\n\nWeekly Challenge\nWeek 13: Defense Wins Championships - The team with the highest-scoring starting defense.\n"
+  if sortedHighestScoringDefenses[0].points == sortedHighestScoringDefenses[1].points:
+    message += f"Uh oh, there was a tie. Multiple teams had defenses who scored {str(sortedHighestScoringDefenses[0].points)} points"
+  else:
+    message += f"The winner was {sortedHighestScoringDefenses[0].teamName} who had {sortedHighestScoringDefenses[0].playerName} score {str(sortedHighestScoringDefenses[0].points)} points"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedHighestScoringDefenses:
+    message += f"{team.teamName.strip()} who had {team.playerName} score {team.points} points\n"
+
+  message += "\n\nThe final week's challenge is: Lucky Stars - The team that defeats its opponent by the smallest margin of victory wins.\n"
   return message

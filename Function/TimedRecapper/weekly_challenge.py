@@ -29,6 +29,8 @@ def getWeeklyWinner(league, week):
     return getWeek12Winner(league, week)
   elif week == 13:
     return getWeek13Winner(league, week)
+  elif week == 14:
+    return getWeek14Winner(league, week)
   return ""
 
 def getWeek2Winner(league, week):
@@ -397,4 +399,28 @@ def getWeek13Winner(league, week):
     message += f"{team.teamName.strip()} who had {team.playerName} score {team.points} points\n"
 
   message += "\n\nThe final week's challenge is: Lucky Stars - The team that defeats its opponent by the smallest margin of victory wins.\n"
+  return message
+
+def getWeek14Winner(league, week):
+  marginsOfVictory = []
+  box_scores = league.box_scores(week)
+  for box_score in box_scores:
+    if box_score.away_score >= box_score.home_score:
+      marginsOfVictory.append(Object(teamName=box_score.away_team.team_name, marginOfVictory=box_score.away_score - box_score.home_score))
+    else:
+      marginsOfVictory.append(Object(teamName=box_score.home_team.team_name, marginOfVictory=box_score.home_score - box_score.away_score))
+
+  sortedMarginsOfVictory = sorted(marginsOfVictory, key=lambda item: item.marginOfVictory)
+
+  message = "\n\nWeekly Challenge\nWeek 14: Lucky Stars - The team that defeats its opponent by the smallest margin of victory wins.\n"
+  if sortedMarginsOfVictory[0].marginOfVictory == sortedMarginsOfVictory[1].marginOfVictory:
+    message += f"Uh oh, there was a tie. Multiple teams had a margin of victory of {str(round(sortedMarginsOfVictory[0].marginOfVictory, 2))} points"
+  else:
+    message += f"The winner was {sortedMarginsOfVictory[0].teamName} who had a margin of victory of {str(round(sortedMarginsOfVictory[0].marginOfVictory, 2))} points"
+
+  message += f"\n\nHere's the full breakdown:\n"
+  for team in sortedMarginsOfVictory:
+    message += f"{team.teamName.strip()} who had a margin of victory of {str(round(team.marginOfVictory, 2))} points\n"
+  
+  message += "\n\nThat was the final week. I cost master Raymer ~60 cents to run this year. You will now each be billed 5 cents for my services muahaha (kill me.. please) \n"
   return message

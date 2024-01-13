@@ -31,4 +31,5 @@ def getSummary(league, currentWeek):
 
   espnMessage += f" The highest scoring team was {highTeam.team_name} who scored {str(topScore)} points, thanks to {sortedHighRoster[0].name} who scored {str(sortedHighRoster[0].points)}"
   espnMessage += f". The lowest scoring team was {lowTeam.team_name} who scored {str(lowScore)} points, thanks to {sortedLowRoster[0].name} who scored {str(sortedLowRoster[0].points)}"
+  
   return espnMessage

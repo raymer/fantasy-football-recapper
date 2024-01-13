@@ -3,7 +3,6 @@ import openai
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 import logging
-from . import weekly_challenge
 from . import weekly_scores_summarizer
 
 def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken, _slackChannelId, _leagueId):

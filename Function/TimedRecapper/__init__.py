@@ -16,5 +16,6 @@ def main(mytimer: func.TimerRequest) -> None:
   openAiKey = os.getenv("openai_key")
   slackBotToken = os.getenv("slack_token")
   slackChannelId = os.getenv("slack_channel_id")
+  leagueId = os.getenv("league_id")
 
-  recapper.generateRecap(swid, espn_s2, openAiKey, slackBotToken, slackChannelId)
+  recapper.generateRecap(swid, espn_s2, openAiKey, slackBotToken, slackChannelId, leagueId)

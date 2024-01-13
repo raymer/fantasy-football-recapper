@@ -6,14 +6,15 @@ import logging
 from . import weekly_challenge
 from . import weekly_scores_summarizer
 
-def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken, _slackChannelId):
+def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken, _slackChannelId, _leagueId):
   swid = _swid
   espn_s2 = _espn_s2
   openai.api_key = _openAiKey
   slackBotToken = _slackToken
   slackChannelId = _slackChannelId
+  leagueId = _leagueId
 
-  league = League(league_id=428433, year=2023, espn_s2=espn_s2, swid=swid)
+  league = League(league_id=leagueId, year=2023, espn_s2=espn_s2, swid=swid)
 
   currentWeek = league.current_week if league.current_week == 1 else league.current_week - 1
 

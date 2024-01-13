@@ -32,11 +32,11 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken, _slackChannelId):
   slackMessage = chatGPTResponse + weekly_challenge.getWeeklyWinner(league, currentWeek)
 
   # Post to Slack
-  # client = WebClient(token=slackBotToken)
-  # try:
-  #   result = client.chat_postMessage(channel=slackChannelId, text=slackMessage)
-  #   logging.info("Posted to Slack")
+  client = WebClient(token=slackBotToken)
+  try:
+    result = client.chat_postMessage(channel=slackChannelId, text=slackMessage)
+    logging.info("Posted to Slack")
 
-  # except SlackApiError as e:
-  #   logging.info(f"Error: {e}")
+  except SlackApiError as e:
+    logging.info(f"Error: {e}")
 

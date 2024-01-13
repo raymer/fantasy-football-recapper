@@ -17,10 +17,8 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken, _slackChannelId, _le
 
   currentWeek = league.current_week if league.current_week == 1 else league.current_week - 1
 
-  # Get weekly score summary.
   weeklySummary = weekly_scores_summarizer.getSummary(league, currentWeek)
 
-  # Use weekly score summary to get ChatGPT summary.
   messages = [ {"role": "system", "content": "You are a intelligent assistant."} ]
   message = f"User : Pretending to be the commissioner of our fantasy football league, write a funny/condescending summary of this week's (week {currentWeek}) results in the fantasy football league given this data about the teams and scores: {weeklySummary}"
 
@@ -29,7 +27,6 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken, _slackChannelId, _le
   chatGPTResponse = chat.choices[0].message.content
   logging.info("Chat GPT Response Generated")
   
-  # Post to Slack
   client = WebClient(token=slackBotToken)
   try:
     result = client.chat_postMessage(channel=slackChannelId, text=chatGPTResponse)

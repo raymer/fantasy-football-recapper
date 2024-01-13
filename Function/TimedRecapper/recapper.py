@@ -30,12 +30,10 @@ def generateRecap(_swid, _espn_s2, _openAiKey, _slackToken, _slackChannelId, _le
   chatGPTResponse = chat.choices[0].message.content
   logging.info("Chat GPT Response Generated")
   
-  slackMessage = chatGPTResponse + weekly_challenge.getWeeklyWinner(league, currentWeek)
-
   # Post to Slack
   client = WebClient(token=slackBotToken)
   try:
-    result = client.chat_postMessage(channel=slackChannelId, text=slackMessage)
+    result = client.chat_postMessage(channel=slackChannelId, text=chatGPTResponse)
     logging.info("Posted to Slack")
 
   except SlackApiError as e:

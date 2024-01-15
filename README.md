@@ -6,7 +6,7 @@ This was a little weekend project to build a bot to post a summary of the fantas
 - Passes those to a GPT prompt asking for a funny summary of those scores.
 - Posts that to Slack (in this case for our fantasy league Slack channel)
 
-There's also an included Azure Function to allow this to be automated. I have it set up to run every Tuesday morning (official end of the week for Fantasy).\
+There's also an included Azure Function to allow this to be automated. I have it set up to run every Tuesday morning (official end of the week for Fantasy).
 
 ## Here's a sample output from GPT:
 ```
